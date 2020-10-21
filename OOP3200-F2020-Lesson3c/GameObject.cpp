@@ -16,6 +16,30 @@ GameObject::GameObject(const int id, const Vector2D<float>& position)
 	SetPosition(position);
 }
 
+GameObject::GameObject(std::string name, int id, const Vector2D<float>& position)
+{
+	SetName(name);
+	SetID(id);
+	SetPosition(position);
+}
+
+GameObject::GameObject(std::string name, int id, float x, float y)
+{
+	SetName(name);
+	SetID(id);
+	SetPosition(x, y);
+}
+
+std::string GameObject::GetName() const
+{
+	return m_name;
+}
+
+void GameObject::SetName(std::string name)
+{
+	m_name = name;
+}
+
 GameObject::~GameObject()
 = default;
 

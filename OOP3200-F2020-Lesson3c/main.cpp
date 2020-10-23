@@ -1,3 +1,5 @@
+#include <fstream>
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -49,16 +51,77 @@ static void CompareGameObjects(GameObject* object1, GameObject* object2)
 }
 
 
-
 int main()
 {
 	//map is made of key-value pairs (a string and a gameobject)
 	//key is a string, value is a GameObject
-	std::map<std::string, GameObject> gameObjects;
+	std::map<std::string, GameObject*> gameObjects;
+
+	auto* ship = new GameObject( 0, "Ship", 3.0f, 4.0f);
+	auto* enemy = new GameObject( 1, "Enemy", 10.0f, 14.0f);
+	auto* space_station = new GameObject(2, "SpaceStation", 100.0f, 200.0f);
+
+	std::cout << ship->ToString() << std::endl;
+	std::cout << enemy->ToString() << std::endl;
+
+	gameObjects[ship->GetName()] = ship;
+	gameObjects[enemy->GetName()] = enemy;
+	gameObjects[space_station->GetName()] = space_station;
+
+	//for every game_object in gameObjects loop
+	for (const auto& game_object : gameObjects)
+	{
+		std::cout << "Key   : " << game_object.first << std::endl;
+		std::cout << "Value : " << std::endl << game_object.second->ToString() << std::endl;
+	}
+
+	auto distance = Vector2D<float>::Distance(gameObjects["Ship"]->GetPosition(), gameObjects["Enemy"]->GetPosition());
+												//gameObjects["Ship"]->GetPosition(), gameObjects["Enemy"]->GetPosition()
+	std::cout << "Distance between our ship and our enemies ship:" << std::endl << std::to_string(distance);
+
+	std::ofstream outfile{"GameObjects.txt", std::ios::out};
+
+	outfile << gameObjects["Ship"]->ToFile() << std::endl;
+	outfile << gameObjects["Enemy"]->ToFile() << std::endl;
+	outfile << gameObjects["SpaceStation"]->ToFile() << std::endl;
+	outfile.close();
 
 
+	std::cout << "-------------------------------------------\n\n";
 
+	std::ifstream infile;
+	std::string fileName = "GameObjects.txt";
 
+	infile.open(fileName.c_str());
+
+	if (infile.is_open())
+	{
+		int id = 0;
+		float x, y = 0;
+		std::string name;
+
+		while (!infile.fail())
+		{
+			infile >> id >> name;
+			infile.ignore(1, ' ');
+			infile.ignore(1, '(');
+			infile >> x;
+			infile.ignore(1, ',');
+			infile.ignore(1, ' ');
+			infile >> y;
+			infile.ignore(1, ')');
+
+			auto* tempObject = new GameObject(id, name, x, y);
+			gameObjects[name + " 2"] = tempObject;
+		}
+		infile.close();
+	}
+
+	for (const auto& game_object : gameObjects)
+	{
+		std::cout << "Key   : " << game_object.first << std::endl;
+		std::cout << "Value : " << std::endl << game_object.second->ToString() << std::endl;
+	}
 
 	//std::vector<GameObject*> gameObjects;
 
